@@ -16,7 +16,7 @@ test("stores latest event per id", async () => {
   };
   history.put("myEvent", myEvent1);
 
-  expect(history.get()).toEqual([myEvent1]);
+  expect(history.getAll()).toEqual([myEvent1]);
 
   const myEvent2 = {
     id: "myEvent",
@@ -25,12 +25,28 @@ test("stores latest event per id", async () => {
   };
   history.put("myEvent", myEvent2);
 
-  expect(history.get()).toEqual([myEvent2]);
+  expect(history.getAll()).toEqual([myEvent2]);
 
   const anotherEvent = { id: "anotherEvent", data: {}, updatedAt: new Date() };
   history.put("anotherEvent", anotherEvent);
 
-  expect(history.get()).toEqual([myEvent2, anotherEvent]);
+  expect(history.getAll()).toEqual([myEvent2, anotherEvent]);
+});
+
+test("get event data by id", async () => {
+  const historyPath = await mkTempFile("history");
+  const history = await createHistory(historyPath);
+
+  const myEvent = {
+    id: "myEvent",
+    data: { first: "event" },
+    updatedAt: new Date()
+  };
+
+  history.put("myEvent", myEvent);
+  const eventFromHistory = await history.get("myEvent");
+
+  expect(eventFromHistory).toEqual(myEvent);
 });
 
 test("writes events to file", async () => {
@@ -60,7 +76,7 @@ test("reads initial history from file", async () => {
   await history1.put("myEvent", myEvent1);
 
   const history2 = await createHistory(historyPath);
-  expect(history2.get()).toEqual([myEvent1]);
+  expect(history2.getAll()).toEqual([myEvent1]);
 });
 
 test("creates history file if it doesnt exist", async () => {

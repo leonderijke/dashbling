@@ -28,15 +28,19 @@ class FileEventHistory implements EventHistory {
 
   async put(id: string, event: Event) {
     this.inMemoryHistory.put(id, event);
-    await writeToFile(this.historyFile, JSON.stringify(this.get()));
+    await this.saveHistory();
   }
 
-  get(): Event[] {
-    return this.inMemoryHistory.get();
+  async get(id: string) {
+    return this.inMemoryHistory.get(id);
+  }
+
+  getAll(): Event[] {
+    return this.inMemoryHistory.getAll();
   }
 
   private async saveHistory() {
-    await writeToFile(this.historyFile, JSON.stringify(this.get()));
+    await writeToFile(this.historyFile, JSON.stringify(this.getAll()));
   }
 
   private async loadHistory() {

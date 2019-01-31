@@ -24,7 +24,7 @@ const extractEvents = onEvent => response => {
 
 const createEventBus = async () => {
   const history = await createHistory();
-  return new EventBus(history);
+  return EventBus.withDefaultReducer(history);
 };
 
 const NOW = new Date();
